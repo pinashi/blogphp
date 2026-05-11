@@ -8,11 +8,11 @@
     <a href="/">← Назад</a>
     
     <?php if (!empty($errors)): ?>
-    <ul style="color: red">
-        <?php foreach ($errors as $error): ?>
-            <li><?= htmlspecialchars($error) ?></li>
-        <?php endforeach; ?>
-    </ul>
+        <ul style="color: red">
+            <?php foreach ($errors as $error): ?>
+                <li><?= htmlspecialchars($error) ?></li>
+            <?php endforeach; ?>
+        </ul>
     <?php endif; ?>
     
     <h1>Новая статья</h1>
