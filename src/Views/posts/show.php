@@ -13,6 +13,10 @@
 
     <a href="/">← Назад</a>
 
+    <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $post['user_id']): ?>
+    <a href="/post/<?= $post['id'] ?>/edit">Редактировать</a>
+    <?php endif; ?>
+
     <h1><?= htmlspecialchars($post['title']) ?></h1>
     <small><?= $post['created_at'] ?></small>
     <p><?= htmlspecialchars($post['content']) ?></p>
