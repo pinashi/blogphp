@@ -14,17 +14,58 @@ class PostController {
         $this->postModel = new Post();
     }
 
+    private function checkPostAccess(int $id): array {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
+        }
+    
+        $post = $this->postModel->getById($id);
+    
+        if (!$post) {
+            http_response_code(404);
+            require_once __DIR__ . '/../Views/404.php';
+            exit;
+        }
+    
+        if ($_SESSION['user_id'] !== (int)$post['user_id']) {
+            http_response_code(403);
+            echo 'Нет доступа';
+            exit;
+        }
+    
+        return $post;
+    }
+    
+    private function validate(array $data): array {
+        $errors = [];
+    
+        if (empty(trim($data['title'] ?? ''))) {
+            $errors[] = 'Заголовок обязателен';
+        }
+    
+        if (strlen($data['title'] ?? '') > 255) {
+            $errors[] = 'Заголовок не должен превышать 255 символов';
+        }
+    
+        if (empty(trim($data['content'] ?? ''))) {
+            $errors[] = 'Содержимое обязательно';
+        }
+    
+        return $errors;
+    }   
+
     /**
      * Home - all posts
      */
     public function index(): void {
         $posts = $this->postModel->getAll();
         require_once __DIR__ . '/../Views/posts/index.php';
-    }
-
-    /**
-     * @param int $id Post ID
-     */
+        }
+        
+        /**
+         * @param int $id Post ID
+        */
     public function show(int $id): void {
         $post = $this->postModel->getById($id);
 
@@ -42,9 +83,14 @@ class PostController {
 
     
     public function create(): void {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            return;
+        }
+        
         require_once __DIR__ . '/../Views/posts/create.php';
-    }
-
+        }
+        
     public function store(): void {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -97,45 +143,5 @@ class PostController {
         $this->postModel->delete($id);
         header('Location: /');
     }
-
-    private function checkPostAccess(int $id): array {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /login');
-            exit;
-        }
-
-        $post = $this->postModel->getById($id);
-
-        if (!$post) {
-            http_response_code(404);
-            require_once __DIR__ . '/../Views/404.php';
-            exit;
-        }
-
-        if ($_SESSION['user_id'] !== (int)$post['user_id']) {
-            http_response_code(403);
-            echo 'Нет доступа';
-            exit;
-        }
-
-        return $post;
-    }
-
-    private function validate(array $data): array {
-        $errors = [];
-
-        if (empty(trim($data['title'] ?? ''))) {
-            $errors[] = 'Заголовок обязателен';
-        }
-
-        if (strlen($data['title'] ?? '') > 255) {
-            $errors[] = 'Заголовок не должен превышать 255 символов';
-        }
-
-        if (empty(trim($data['content'] ?? ''))) {
-            $errors[] = 'Содержимое обязательно';
-        }
-
-        return $errors;
-    }   
+    
 }
