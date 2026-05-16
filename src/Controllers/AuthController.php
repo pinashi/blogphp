@@ -1,22 +1,39 @@
 <?php
+declare(strict_types=1);
 
 require_once __DIR__ . '/../Models/User.php';
 
+/**
+ * Handles user authentication: registration, login, and logout.
+ */
 Class AuthController {
+    /**
+     * @var User $userModel User model instance
+     */
     private User $userModel;
 
-    public function __construct()
-    {
-        session_start();
+    /**
+     * Initializes session and user model.
+     */
+    public function __construct() {
         $this->userModel = new User();
     }
 
-    // Registration form
+    /**
+     * Display registration form.
+     *
+     * @return void
+     */
     public function register(): void {
         require_once __DIR__ . '/../Views/auth/register.php';
     }
 
-    // Registration processing
+    /**
+     * Handle registration form submission.
+     * Validates email uniqueness and creates new user.
+     *
+     * @return void
+     */
     public function registerStore(): void {
         $name       = $_POST['name'];
         $email      = $_POST['email'];
@@ -37,12 +54,21 @@ Class AuthController {
         header('Location: /login');
     }
 
-    // Login form
+    /**
+     * Display login form.
+     *
+     * @return void
+     */
     public function login(): void {
         require_once __DIR__ . '/../Views/auth/login.php';
     }
 
-    // Login processing
+    /**
+     * Handle login form submission.
+     * Verifies credentials and starts user session.
+     *
+     * @return void
+     */
     public function loginStore(): void {
         $email = $_POST['email'];
         $password = $_POST['password'];
@@ -61,7 +87,11 @@ Class AuthController {
         header('Location: /');
     }
 
-    // Logout
+    /**
+     * Destroy session and redirect to home page.
+     *
+     * @return void
+     */
     public function logout(): void {
         session_destroy();
         header('Location: /');

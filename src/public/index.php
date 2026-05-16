@@ -1,7 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../Router.php';
 
+/**
+ * Application entry point.
+ * Initializes router and registers all routes.
+ */
+
+session_start();
 $router = new Router();
 
 $router->get('',                    ['PostController', 'index']);

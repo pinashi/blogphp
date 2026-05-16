@@ -1,18 +1,45 @@
 <?php
 
+declare(strict_types=1);
 
+/**
+ * Simple URL router that maps HTTP requests to controller actions.
+ */
 class Router {
 
+    /**
+     * @var array $routes Registered routes grouped by HTTP method
+     */
     public array $routes = [];
 
+    /**
+     * Register a GET route.
+     *
+     * @param string $uri URL pattern, supports {param} placeholders
+     * @param array $action Array containing controller class name and method
+     * @return void
+     */
     public function get(string $uri, array $action): void {
         $this->routes['GET'][$uri] = $action;
     }
 
+    /**
+     * Register a POST route.
+     *
+     * @param string $uri URL pattern, supports {param} placeholders
+     * @param array $action Array containing controller class name and method
+     * @return void
+     */
     public function post(string $uri, array $action): void {
         $this->routes['POST'][$uri] = $action;
     }
 
+    /**
+     * Match current request to a registered route and call the controller.
+     * Returns 404 if no route matches.
+     *
+     * @return void
+     */
     public function dispatch(): void {       
         $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $uri    = trim($uri, '/');

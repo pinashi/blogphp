@@ -1,19 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../config/database.php';
 
+/**
+ * Model for managing blog users.
+ */
 Class User {
-    private $db;
+    /**
+     * @var PDO $db Database connection instance
+     */
+    private PDO $db;
 
-    public function __construct()
-    {
+    /**
+     * Initializes database connection.
+     */
+    public function __construct() {
         $this->db = Database::getConnection();
     }
 
-
     /**
+     * Find a user by email address.
+     *
      * @param string $email User email
-     * @return array|false User or false
+     * @return array|false User data or false if not found
      */
     public function getByEmail(string $email): array|false {
         $stmt = $this->db->prepare('
@@ -23,6 +34,12 @@ Class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Create a new user with hashed password.
+     *
+     * @param array $data User data containing name, email, password
+     * @return bool True on success, false on failure
+     */
     public function create(array $data): bool {
         $stmt = $this->db->prepare('
             INSERT INTO users (name, email, password) VALUES (?, ?, ?)

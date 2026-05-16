@@ -5,15 +5,31 @@ declare(strict_types=1);
 require_once __DIR__ . '/../Models/Post.php';
 require_once __DIR__ . '/../Models/Comment.php';
 
+/**
+ * Handles all blog post operations: listing, viewing, creating, editing, and deleting.
+ */
 class PostController {
+    /**
+     * @var Post $postModel Post model instance
+     */
     private Post $postModel;
 
-    public function __construct()
-    {
-        session_start();
+    /**
+     * Initializes session and post model.
+     */
+    public function __construct() {
         $this->postModel = new Post();
     }
 
+    /**
+     * Check if user has access to modify the post.
+     * Redirects to login if not authenticated.
+     * Returns 404 if post not found.
+     * Returns 403 if user is not the post author.
+     *
+     * @param int $id Post ID
+     * @return array Post data
+     */
     private function checkPostAccess(int $id): array {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -37,6 +53,12 @@ class PostController {
         return $post;
     }
     
+    /**
+     * Validate post form data.
+     *
+     * @param array $data Form data containing title and content
+     * @return array List of validation errors, empty if valid
+     */
     private function validate(array $data): array {
         $errors = [];
     
@@ -56,16 +78,21 @@ class PostController {
     }   
 
     /**
-     * Home - all posts
+     * Display list of all posts.
+     *
+     * @return void
      */
     public function index(): void {
         $posts = $this->postModel->getAll();
         require_once __DIR__ . '/../Views/posts/index.php';
-        }
+    }
         
-        /**
-         * @param int $id Post ID
-        */
+    /**
+     * Display a single post with comments.
+     *
+     * @param int $id Post ID
+     * @return void
+     */
     public function show(int $id): void {
         $post = $this->postModel->getById($id);
 
@@ -81,7 +108,12 @@ class PostController {
         require_once __DIR__ . '/../Views/posts/show.php';
     }
 
-    
+    /**
+     * Display post creation form.
+     * Requires authentication.
+     *
+     * @return void
+     */
     public function create(): void {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -89,8 +121,14 @@ class PostController {
         }
         
         require_once __DIR__ . '/../Views/posts/create.php';
-        }
-        
+    }
+    
+    /**
+     * Handle post creation form submission.
+     * Requires authentication.
+     *
+     * @return void
+     */
     public function store(): void {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -113,12 +151,26 @@ class PostController {
         header('Location: /');
     }
 
+    /**
+     * Display post edit form.
+     * Requires authentication and post ownership.
+     *
+     * @param int $id Post ID
+     * @return void
+     */
     public function edit(int $id): void {
         $post = $this->checkPostAccess($id);
 
         require_once __DIR__ . '/../Views/posts/edit.php';
     }
 
+    /**
+     * Handle post update form submission.
+     * Requires authentication and post ownership.
+     *
+     * @param int $id Post ID
+     * @return void
+     */
     public function update(int $id): void {
         $post = $this->checkPostAccess($id);
         $title   = trim($_POST['title'] ?? '');
@@ -138,6 +190,13 @@ class PostController {
         header('Location: /post/' . $id);
     }
 
+    /**
+     * Delete a post.
+     * Requires authentication and post ownership.
+     *
+     * @param int $id Post ID
+     * @return void
+     */
     public function destroy(int $id): void {
         $this->checkPostAccess($id);
         $this->postModel->delete($id);
