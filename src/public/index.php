@@ -18,4 +18,6 @@ $router->get('login',               ['AuthController', 'login']);
 $router->post('login',              ['AuthController', 'loginStore']);
 $router->get('logout',              ['AuthController', 'logout']);
 
+$router->post('post/{id}/comment',  ['CommentController', 'store']);
+
 $router->dispatch();

@@ -18,11 +18,22 @@ Class Comment {
         $stmt = $this->db->prepare('
             SELECT comments.*, users.name as author
             FROM comments
-            JOIN users ON comments.user_id = user_id
+            JOIN users ON comments.user_id = users.id
             WHERE comments.post_id = ?
             ORDER BY comments.created_at ASC
         ');
         $stmt->execute([$postId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function create(array $data): bool {
+        $stmt = $this->db->prepare('
+            INSERT INTO comments (post_id, user_id, text) VALUES (?, ?, ?)
+        ');
+        return $stmt->execute([
+            $data['post_id'],
+            $data['user_id'],
+            $data['text']
+        ]);
     }
 }
