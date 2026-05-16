@@ -10,6 +10,7 @@ require_once __DIR__ . '/../Router.php';
  */
 
 session_start();
+phpversion();
 $router = new Router();
 
 $router->get('',                    ['PostController', 'index']);
