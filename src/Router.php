@@ -57,7 +57,7 @@ class Router {
                 require_once __DIR__ . "/Controllers/{$controllerClass}.php";
 
                 $controller = new $controllerClass();
-                $controller->$method(...$matches);
+                $controller->$method(...array_map('intval', $matches));
                 return;
             }
         
